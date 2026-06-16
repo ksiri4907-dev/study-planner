@@ -1,0 +1,6 @@
+{
+  "name": "AIML Study Planner",
+  "description": "A smart, empathetic 30-day study planner for Computer Science AIML students, featuring dynamic schedule adaptation and code debugging tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

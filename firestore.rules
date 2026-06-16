@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Custom helper validations representing the foundations of Attribute-Based Access Control
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation helper for user profile schema matching "Anti-Update-Gap" principles
+    function isValidUserProfile(data) {
+      return data.userId == request.auth.uid
+        && data.completedDays is list
+        && data.challengeCompletions is list
+        && data.isAdapted is bool
+        && data.notes is string
+        && data.notes.size() <= 10000
+        && data.userNotes is map;
+    }
+
+    // Secure rule block for personal user documents
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      
+      allow create: if isOwner(userId) 
+        && isValidUserProfile(incoming())
+        && incoming().updatedAt == request.time;
+        
+      allow update: if isOwner(userId) 
+        && isValidUserProfile(incoming())
+        && incoming().updatedAt == request.time;
+        
+      allow delete: if isOwner(userId);
+    }
+  }
+}

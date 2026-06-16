@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "userProfile": {
+      "title": "UserProfile",
+      "description": "Stores user progress, completion trackers, challenge status, and adapted plan variations on the cloud.",
+      "type": "object",
+      "properties": {
+        "completedDays": {
+          "type": "array",
+          "description": "List of day numbers completed by the student."
+        },
+        "challengeCompletions": {
+          "type": "array",
+          "description": "List of day numbers where challenge tasks were conquered."
+        },
+        "userNotes": {
+          "type": "object",
+          "description": "Key-value pair mapping day numbers to personal notes strings."
+        },
+        "isAdapted": {
+          "type": "boolean",
+          "description": "Flag showing whether the study plan has been dynamically adapted by the AI assistant."
+        },
+        "notes": {
+          "type": "string",
+          "description": "General notepad persistent study memo."
+        },
+        "currentDayIndex": {
+          "type": "number",
+          "description": "The current active study day index (1-30)."
+        },
+        "adaptedPlan": {
+          "type": "array",
+          "description": "Customized restructured daily tasks and topics list if isAdapted is true."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The unique Firebase Authentication UID of the logged-in student."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the logged-in student."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The last synchronization timestamp."
+        }
+      },
+      "required": ["userId", "completedDays", "challengeCompletions", "userNotes", "isAdapted", "notes"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "userProfile",
+      "description": "Main document for each student's persistent study progress state, structured under their individual authenticated user identifier."
+    }
+  }
+}
